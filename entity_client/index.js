@@ -30,4 +30,4 @@ let encodedEntity = Buffer.from(entity, 'utf8').toString('base64');
 
 var client = new XOClient("jack");
 client.create(encodedTrustAnchorEntity, 'wow', 'trust-anchor', 'Energistyrelsen');
-// client.create(encodedEntity, 'veryEnergiPublic', 'Energistyrelsen', 'dst');
+//client.create(encodedEntity, 'veryEnergiPublic', 'Energistyrelsen', 'dst');

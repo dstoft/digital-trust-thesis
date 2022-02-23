@@ -17,6 +17,7 @@
 
 'use strict'
 
+const { Console } = require('console')
 const crypto = require('crypto')
 const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding')
 
@@ -28,7 +29,7 @@ class EntityState {
   }
 
   getEntity (name) {
-    return Promise.resolve(undefined); // TODO: Remove this
+    // return Promise.resolve(undefined); // TODO: Remove this
     return this._loadEntity(name)
   }
 
@@ -39,21 +40,25 @@ class EntityState {
     let entries = {
       [address]: data
     }
-    console.log('Attempting to se context!');
+    console.log('Attempting to set context!');
     return this.context.setState(entries, this.timeout)
   }
 
   _loadEntity (name) {
     let address = _makeEntityAddress(name)
+    console.log(address);
     return this.context.getState([address], this.timeout)
       .then((addressValues) => {
-        if (!addressValues[address].toString()) {
+        console.log(addressValues)
+        if (!addressValues || !addressValues[address] || !addressValues[address].toString()) {
+          console.log("Something was null when loading entity")
           return null;
         } else {
           let data = addressValues[address].toString()
           return _deserialize(data);
         }
       }, reason => {
+        console.log("Getstate threw an exception" + reason.toString())
         return null;
       }
     );

@@ -38,48 +38,54 @@ class EntityHandler extends TransactionHandler {
     // let header = transactionProcessRequest.header
     // let player = header.signerPublicKey
 
-    let owner = entityState.getEntity(transactionPayload.ownerName);
-    // Verify signature (dump if-statement for now)
-    if(!this._verifySignature(transactionPayload.ownerName, transactionPayload.inputPayload, transactionPayload.signature)) {
-      throw new InvalidTransaction('Invalid signature!');
-    }
+    return entityState.getEntity(transactionPayload.ownerName).then((ownerEntity) => {
+      // Verify signature (dump if-statement for now)
+      if(!this._verifySignature(ownerEntity, transactionPayload.inputPayload, transactionPayload.signature)) {
+        throw new InvalidTransaction('Invalid signature!');
+      }
+    }).then(() => {
 
-    let entityPayload = EntityPayload.fromBytes(transactionPayload.inputPayload);
-    if (entityPayload.action === 'create') {
-      return entityState.getEntity(entityPayload.name)
-        .then((entity) => {
-          if (entity !== undefined) {
-            throw new InvalidTransaction('Invalid Action: Entity already exists.')
-          }
-          
-          let createdEntity = {
-            publicKey: entityPayload.publicKey,
-            name: entityPayload.name,
-            trustedBy: [],
-            owner: entityPayload.ownerName
-          };
-
-          console.log('Setting entity');
-          return entityState.setEntity(entityPayload.name, createdEntity)
-        })
-    } else {
-      throw new InvalidTransaction(
-        `Action must be create, not ${entityPayload.action}`
-      )
-    }
+      let entityPayload = EntityPayload.fromBytes(transactionPayload.inputPayload);
+      if (entityPayload.action === 'create') {
+        return this._createEntity(entityPayload, entityState);
+      } else {
+        throw new InvalidTransaction(
+          `Action must be create, not ${entityPayload.action}`
+        )
+      }
+    });
   }
 
-  _verifySignature(ownerName, inputPayload, signature) {
-    if(ownerName == 'trust-anchor' && signature == trustAnchorPublicKey) {
+  _createEntity(entityPayload, entityState) {
+    return entityState.getEntity(entityPayload.name)
+    .then((entity) => {
+      if (entity !== undefined && entity !== null) {
+        throw new InvalidTransaction('Invalid Action: Entity already exists.')
+      }
+      
+      let createdEntity = {
+        publicKey: entityPayload.publicKey,
+        name: entityPayload.name,
+        trustedBy: [],
+        owner: entityPayload.ownerName
+      };
+
+      console.log('Setting entity');
+      return entityState.setEntity(entityPayload.name, createdEntity)
+    });
+  }
+
+  _verifySignature(ownerEntity, inputPayload, signature) {
+    if(signature == trustAnchorPublicKey) {
       console.log('Verifying trust-anchor');
       return true;
     }
-    let ownerEntity = entityState.getEntity(ownerName);
     if(ownerEntity === null) {
       console.log('Owner entity is null');
       return false;
     }
-    if(transactionPayload.signature == owner.publicKey) {
+    console.log(signature + " : " + ownerEntity.publicKey);
+    if(signature == ownerEntity.publicKey) {
       console.log('Signature verified');
       return true;
     }

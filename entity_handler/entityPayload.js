@@ -28,7 +28,6 @@ class EntityPayload {
   }
 
   static fromBytes (payload) {
-    console.log('Entity payload: ' + payload)
     payload = Buffer.from(payload, 'base64').toString().split(',')
     if (payload.length === 4) {
       let entityPayload = new EntityPayload(payload[0], payload[1], payload[2], payload[3])
