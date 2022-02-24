@@ -40,14 +40,14 @@ class XOClient {
     getUserPriKey(userid) {
         console.log(userid);
         console.log("Current working directory is: " + process.cwd());
-        var userprivkeyfile = './'+userid+'.priv';
+        var userprivkeyfile = './keys/'+userid+'.priv';
         return fs.readFileSync(userprivkeyfile);
     }
 
     getUserPubKey(userid) {
         console.log(userid);
         console.log("Current working directory is: " + process.cwd());
-        var userpubkeyfile = './'+userid+'.pub';
+        var userpubkeyfile = './keys/'+userid+'.pub';
         return fs.readFileSync(userpubkeyfile);
     }
 

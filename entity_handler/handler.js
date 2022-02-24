@@ -1,20 +1,3 @@
-/**
- * Copyright 2017-2018 Intel Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ------------------------------------------------------------------------------
- */
-
 'use strict'
 
 const EntityPayload = require('./entityPayload')
@@ -25,22 +8,23 @@ const { ENTITY_NAMESPACE, ENTITY_FAMILY, EntityState } = require('./state')
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler')
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 
-const trustAnchorPublicKey = 'wow';
+const { createContext } = require('sawtooth-sdk/signing')
+const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
+
+const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 
 class EntityHandler extends TransactionHandler {
   constructor () {
     super(ENTITY_FAMILY, ['1.0'], [ENTITY_NAMESPACE])
+    this.context = createContext('secp256k1');
   }
 
   apply (transactionProcessRequest, context) {
     let transactionPayload = EntityTransactionPayload.fromBytes(transactionProcessRequest.payload)
     let entityState = new EntityState(context)
-    // let header = transactionProcessRequest.header
-    // let player = header.signerPublicKey
 
     return entityState.getEntity(transactionPayload.ownerName).then((ownerEntity) => {
-      // Verify signature (dump if-statement for now)
-      if(!this._verifySignature(ownerEntity, transactionPayload.inputPayload, transactionPayload.signature)) {
+      if(!this._verifyTransactionSignature(ownerEntity, transactionPayload.inputPayload, transactionPayload.signature, transactionPayload.ownerName)) {
         throw new InvalidTransaction('Invalid signature!');
       }
     }).then(() => {
@@ -70,27 +54,24 @@ class EntityHandler extends TransactionHandler {
         owner: entityPayload.ownerName
       };
 
-      console.log('Setting entity');
       return entityState.setEntity(entityPayload.name, createdEntity)
     });
   }
 
-  _verifySignature(ownerEntity, inputPayload, signature) {
-    if(signature == trustAnchorPublicKey) {
+  _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {
+    if(ownerName == 'trust-anchor') {
       console.log('Verifying trust-anchor');
-      return true;
+      return this._verifySignature(signature, inputPayload, trustAnchorPublicKey);
     }
     if(ownerEntity === null) {
       console.log('Owner entity is null');
       return false;
     }
-    console.log(signature + " : " + ownerEntity.publicKey);
-    if(signature == ownerEntity.publicKey) {
-      console.log('Signature verified');
-      return true;
-    }
-    console.log('Could not verify signature')
-    return false;
+    return this._verifySignature(signature, inputPayload, ownerEntity.publicKey);
+  }
+
+  _verifySignature(signature, message, publicKey) {
+    return this.context.verify(signature, message, Secp256k1PublicKey.fromHex(publicKey));
   }
 }
 
