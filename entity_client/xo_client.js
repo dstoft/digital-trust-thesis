@@ -29,7 +29,8 @@ class XOClient {
 
     create(inputPayload, signature, ownerName, name) {
         let inputAddresses = [this.getAddress(ownerName), this.getAddress(name)];
-        this._wrap_and_send(inputPayload, signature, ownerName, 'create', inputAddresses);
+        let outputAddresses = [this.getAddress(name)];
+        this._wrap_and_send(inputPayload, signature, ownerName, 'create', inputAddresses, outputAddresses);
     }
 
     getAddress(name) {
@@ -50,22 +51,21 @@ class XOClient {
         return fs.readFileSync(userpubkeyfile);
     }
 
-    _wrap_and_send(inputPayload, signature, ownerName, action, inputAddresses) {
+    _wrap_and_send(inputPayload, signature, ownerName, action, inputAddresses, outputAddresses) {
         var payload = '';
         payload = [inputPayload, signature, ownerName, action].join(",");
         console.log(payload);
-        this._send_wrapped(payload, inputAddresses);
+        this._send_wrapped(payload, inputAddresses, outputAddresses);
     }
 
-    _send_wrapped(payload, inputAddresses){
-        const address = inputAddresses;
+    _send_wrapped(payload, inputAddresses, outputAddresses){
         var enc = new TextEncoder('utf8');
         const payloadBytes = enc.encode(payload);
         const transactionHeaderBytes = protobuf.TransactionHeader.encode({
             familyName: 'entity',
             familyVersion: '1.0',
-            inputs: address,
-            outputs: address,
+            inputs: inputAddresses,
+            outputs: outputAddresses,
             signerPublicKey: this.signer.getPublicKey().asHex(),
             nonce: "" + Math.random(),
             batcherPublicKey: this.signer.getPublicKey().asHex(),
