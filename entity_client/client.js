@@ -16,11 +16,9 @@ function toBase64(str) {
     return Buffer.from(str, 'utf8').toString('base64');
 }
 
-class XOClient {
-    constructor(userid) {
-        const privateKeyStrBuf = this.getUserPriKey(userid);
-        console.log(privateKeyStrBuf.toString());
-        const privateKeyStr = privateKeyStrBuf.toString().trim();
+class EntityClient {
+    constructor() {
+        const privateKeyStr = this.getPriKey().toString().trim();
         const context = createContext('secp256k1');
         const privateKey = Secp256k1PrivateKey.fromHex(privateKeyStr);
         this.signer = new CryptoFactory(context).newSigner(privateKey);
@@ -37,18 +35,14 @@ class XOClient {
         return hash("entity").substr(0, 6) + hash(name).substr(0, 64);
     }
 
-    getUserPriKey(userid) {
-        console.log(userid);
-        console.log("Current working directory is: " + process.cwd());
-        var userprivkeyfile = './keys/'+userid+'.priv';
-        return fs.readFileSync(userprivkeyfile);
+    getPriKey() {
+        var privkeyfile = './keys/client.priv';
+        return fs.readFileSync(privkeyfile);
     }
 
-    getUserPubKey(userid) {
-        console.log(userid);
-        console.log("Current working directory is: " + process.cwd());
-        var userpubkeyfile = './keys/'+userid+'.pub';
-        return fs.readFileSync(userpubkeyfile);
+    getPubKey() {
+        var pubkeyfile = './keys/client.pub';
+        return fs.readFileSync(pubkeyfile);
     }
 
     _wrap_and_send(inputPayload, signature, ownerName, action, inputAddresses, outputAddresses) {
@@ -129,4 +123,6 @@ class XOClient {
         }
     }
 }
-module.exports.XOClient = XOClient;
+module.exports = {
+    EntityClient
+};

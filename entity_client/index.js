@@ -1,7 +1,7 @@
 'use strict'
 
-var {XOClient} = require('./xo_client')
-var client = new XOClient("jack");
+var {EntityClient} = require('./client')
+var client = new EntityClient();
 
 var {createTrustAnchor, createJill, createJohn} = require('./submitter');
 const {createNewKeyPair} = require("./keys/creator");
@@ -15,12 +15,12 @@ var trustAnchor = createTrustAnchor();
 var jill = createJill();
 var john = createJohn();
 
-var entityTransaction = trustAnchor;
-client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
+// var entityTransaction = trustAnchor;
+// client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
 // var entityTransaction = jill;
 // client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
-// var entityTransaction = john;
-// client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
+var entityTransaction = john;
+client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
 
 
 
