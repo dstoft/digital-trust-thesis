@@ -31,6 +31,12 @@ class EntityClient {
         this._wrap_and_send(inputPayload, signature, ownerName, 'create', inputAddresses, outputAddresses);
     }
 
+    addTrust(inputPayload, signature, ownerName, name) {
+        let inputAddresses = [this.getAddress(ownerName), this.getAddress(name)];
+        let outputAddresses = [this.getAddress(name)];
+        this._wrap_and_send(inputPayload, signature, ownerName, 'add-trust', inputAddresses, outputAddresses);
+    }
+
     getAddress(name) {
         return hash("entity").substr(0, 6) + hash(name).substr(0, 64);
     }

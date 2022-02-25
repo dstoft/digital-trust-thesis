@@ -27,7 +27,21 @@ class EntityTransaction {
     }
 }
 
+class TrustEntity {
+    constructor (receiver, trustedBy, action) {
+        this.receiver = receiver;
+        this.trustedBy = trustedBy;
+        this.action = action;
+    }
+
+    toBase64() {
+        let entity = [this.receiver, this.trustedBy, this.action].join(',');
+        return Buffer.from(entity, 'utf8').toString('base64');
+    }
+}
+
 module.exports = {
     Entity,
-    EntityTransaction
+    EntityTransaction,
+    TrustEntity
 }

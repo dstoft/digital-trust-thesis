@@ -3,7 +3,7 @@
 var {EntityClient} = require('./client')
 var client = new EntityClient();
 
-var {createTrustAnchor, createJill, createJohn} = require('./submitter');
+var {createTrustAnchor, createJill, createJohn, createEnergistyrelsenToJillTrust, createJohnToJillTrust} = require('./submitter');
 const {createNewKeyPair} = require("./keys/creator");
 
 const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
@@ -14,13 +14,17 @@ const context = createContext('secp256k1');
 var trustAnchor = createTrustAnchor();
 var jill = createJill();
 var john = createJohn();
+var trustAnchorTrustJill = createEnergistyrelsenToJillTrust();
+var johnTrustJill = createJohnToJillTrust();
 
 // var entityTransaction = trustAnchor;
-// client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
 // var entityTransaction = jill;
+// var entityTransaction = john;
 // client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
-var entityTransaction = john;
-client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
+
+// var entityTransaction = trustAnchorTrustJill;
+// var entityTransaction = johnTrustJill;
+// client.addTrust(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name)
 
 
 

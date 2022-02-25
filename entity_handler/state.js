@@ -41,6 +41,17 @@ class EntityState {
     return this.context.setState(entries, this.timeout)
   }
 
+  addTrustedBy(name, trustByAddition) {
+    return this._loadEntity(name).then(entity => {
+      let currentTrustedBy = entity.trustedBy;
+      if(currentTrustedBy.includes(trustByAddition)) {
+        return;
+      }
+      entity.trustedBy.push(trustByAddition);
+      return this.setEntity(name, entity);
+    });
+  }
+
   _loadEntity (name) {
     let address = _makeEntityAddress(name)
     return this.context.getState([address], this.timeout)

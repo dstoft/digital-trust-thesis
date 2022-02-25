@@ -1,7 +1,8 @@
 'use strict'
 
-const EntityPayload = require('./entityPayload')
 const EntityTransactionPayload = require('./entityTransactionPayload')
+const EntityPayload = require('./entityPayload')
+const { TrustEntityPayload } = require('./trustEntityPayload')
 
 const { ENTITY_NAMESPACE, ENTITY_FAMILY, EntityState } = require('./state')
 
@@ -29,9 +30,14 @@ class EntityHandler extends TransactionHandler {
       }
     }).then(() => {
 
-      let entityPayload = EntityPayload.fromBytes(transactionPayload.inputPayload);
-      if (entityPayload.action === 'create') {
+      if (transactionPayload.action === 'create') {
+        let entityPayload = EntityPayload.fromBytes(transactionPayload.inputPayload);
+        this._verifyActionConsistency(transactionPayload.action, entityPayload.action);
         return this._createEntity(entityPayload, entityState);
+      } else if (transactionPayload.action === 'add-trust') {
+        let payload = TrustEntityPayload.fromBytes(transactionPayload.inputPayload);
+        this._verifyActionConsistency(transactionPayload.action, payload.action);
+        return this._addTrustRelationship(payload, entityState);
       } else {
         throw new InvalidTransaction(
           `Action must be create, not ${entityPayload.action}`
@@ -58,6 +64,10 @@ class EntityHandler extends TransactionHandler {
     });
   }
 
+  _addTrustRelationship(trustEntityPayload, entityState) {
+    return entityState.addTrustedBy(trustEntityPayload.receiver, trustEntityPayload.trustedBy);
+  }
+
   _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {
     if(ownerName == 'trust-anchor') {
       console.log('Verifying trust-anchor');
@@ -72,6 +82,13 @@ class EntityHandler extends TransactionHandler {
 
   _verifySignature(signature, message, publicKey) {
     return this.context.verify(signature, message, Secp256k1PublicKey.fromHex(publicKey));
+  }
+
+  _verifyActionConsistency(action, otherAction) {
+    if(action == otherAction) {
+      return;
+    }
+    throw new InvalidTransaction('Actions from the two payloads does not match!');
   }
 }
 
