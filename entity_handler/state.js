@@ -18,7 +18,8 @@
 'use strict'
 
 const crypto = require('crypto')
-const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding')
+const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding');
+const StateEntity = require('./dist/types').StateEntity;
 
 class EntityState {
   constructor (context) {
@@ -33,7 +34,7 @@ class EntityState {
   setEntity (name, entity) {
     let address = _makeEntityAddress(name)
 
-    let data = _serialize(entity.publicKey, entity.name, entity.trustedBy, entity.owner);
+    let data = _serialize(entity);
     let entries = {
       [address]: data
     }
@@ -86,18 +87,9 @@ module.exports = {
 }
 
 const _deserialize = (data) => {
-  let splitData = data.split(',');
-  return {
-    publicKey: splitData[0],
-    name: splitData[1],
-    trustedBy: Buffer.from(splitData[2], 'base64').toString().split(','),
-    owner: splitData[3]
-  };
+  return StateEntity.fromString(data);
 }
 
-const _serialize = (publicKey, name, trustedBy, owner) => {
-  let encodedTrustedBy = Buffer.from(trustedBy.join(','), 'utf8').toString('base64');
-  let array = [publicKey, name, encodedTrustedBy, owner];
-
-  return Buffer.from(array.join(','))
+const _serialize = (stateEntity) => {
+  return stateEntity.toString();
 }

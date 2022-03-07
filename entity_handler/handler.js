@@ -11,6 +11,7 @@ const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 
 const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
+const StateEntity = require('./dist/types').StateEntity;
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 
@@ -52,13 +53,8 @@ class EntityHandler extends TransactionHandler {
       if (entity !== undefined && entity !== null) {
         throw new InvalidTransaction('Invalid Action: Entity already exists.')
       }
-      
-      let createdEntity = {
-        publicKey: entityPayload.publicKey,
-        name: entityPayload.name,
-        trustedBy: [],
-        owner: entityPayload.ownerName
-      };
+
+      let createdEntity = new StateEntity(entityPayload.publicKey, entityPayload.name, entityPayload.owner, [], [], []);
 
       return entityState.setEntity(entityPayload.name, createdEntity)
     });

@@ -12,3 +12,9 @@ Make sure that sawtooth-sdk-javascript-main has been compiled using the commands
 
 ## Inspiration
 https://github.com/hyperledger/sawtooth-sdk-javascript/tree/main/examples/xo
+
+## Compile TypeScript files
+Run
+```
+npx tsc
+```

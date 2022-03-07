@@ -11,7 +11,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cbor": "^3.0.0",
-    "text-encoding": "^0.6.4",
-    "sawtooth-sdk": "file:../sawtooth-sdk-javascript-main"
+    "sawtooth-sdk": "file:../sawtooth-sdk-javascript-main",
+    "text-encoding": "^0.6.4"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.2"
   }
 }
