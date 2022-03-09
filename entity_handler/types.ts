@@ -17,9 +17,20 @@ export class StateEntity {
 
     static fromString(string: string): StateEntity {
         let splitData = string.split(',');
-        let decodedTrustedBy = Buffer.from(splitData[3], 'base64').toString().split(',');
-        let decodedProperties = StateEntityProperty.fromBase64(splitData[4]);
-        let decodedChildrenProperties = Buffer.from(splitData[5], 'base64').toString().split(',');
+        
+        let decodedTrustedBy = [];
+        if(splitData[3] !== "") {
+            decodedTrustedBy = Buffer.from(splitData[3], 'base64').toString().split(',');
+        }
+        let decodedProperties = [];
+        if(splitData[4] !== "") {
+            decodedProperties = StateEntityProperty.fromBase64(splitData[4]);
+        }
+        let decodedChildrenProperties = [];
+        if(splitData[5] !== "") {
+            decodedChildrenProperties = Buffer.from(splitData[5], 'base64').toString().split(',');
+        }
+        
         return new StateEntity(
             splitData[0],
             splitData[1],
@@ -58,6 +69,7 @@ export class StateEntityProperty {
     }
 
     static fromBase64(string: string): StateEntityProperty[] {
+        if(string === "") {return [];}
         return Buffer.from(string, 'base64').toString().split(',').map(StateEntityProperty.fromPairString);
     }
 

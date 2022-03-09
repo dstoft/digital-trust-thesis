@@ -12,7 +12,8 @@
   "dependencies": {
     "cbor": "^3.0.0",
     "sawtooth-sdk": "file:../sawtooth-sdk-javascript-main",
-    "text-encoding": "^0.6.4"
+    "text-encoding": "^0.6.4",
+    "entity_shared": "file:../entity_shared"
   },
   "devDependencies": {
     "typescript": "^4.6.2"

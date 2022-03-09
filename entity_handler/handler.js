@@ -1,9 +1,5 @@
 'use strict'
 
-const EntityTransactionPayload = require('./entityTransactionPayload')
-const EntityPayload = require('./entityPayload')
-const { TrustEntityPayload } = require('./trustEntityPayload')
-
 const { ENTITY_NAMESPACE, ENTITY_FAMILY, EntityState } = require('./state')
 
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler')
@@ -12,6 +8,7 @@ const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const StateEntity = require('./dist/types').StateEntity;
+const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 
@@ -22,46 +19,43 @@ class EntityHandler extends TransactionHandler {
   }
 
   apply (transactionProcessRequest, context) {
-    let transactionPayload = EntityTransactionPayload.fromBytes(transactionProcessRequest.payload)
-    let entityState = new EntityState(context)
+    let transactionPayload = TransactionPayload.fromBytes(transactionProcessRequest.payload);
+    let transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+    let entityState = new EntityState(context);
 
-    return entityState.getEntity(transactionPayload.ownerName).then((ownerEntity) => {
-      if(!this._verifyTransactionSignature(ownerEntity, transactionPayload.inputPayload, transactionPayload.signature, transactionPayload.ownerName)) {
+    return entityState.getEntity(transactionAction.signer).then((ownerEntity) => {
+      if(!this._verifyTransactionSignature(ownerEntity, transactionPayload.payload, transactionPayload.signature, transactionAction.signer)) {
         throw new InvalidTransaction('Invalid signature!');
       }
     }).then(() => {
 
-      if (transactionPayload.action === 'create') {
-        let entityPayload = EntityPayload.fromBytes(transactionPayload.inputPayload);
-        this._verifyActionConsistency(transactionPayload.action, entityPayload.action);
-        return this._createEntity(entityPayload, entityState);
-      } else if (transactionPayload.action === 'add-trust') {
-        let payload = TrustEntityPayload.fromBytes(transactionPayload.inputPayload);
-        this._verifyActionConsistency(transactionPayload.action, payload.action);
-        return this._addTrustRelationship(payload, entityState);
+      if (transactionAction.action === 'create') {
+        return this._createEntity(transactionAction.affectedEntity, transactionAction.parameters.publicKey, transactionAction.signer, entityState);
+      } else if (transactionAction.action === 'add-trust') {
+        return this._addTrustRelationship(transactionAction.affectedEntity, transactionAction.signer, entityState);
       } else {
         throw new InvalidTransaction(
-          `Action must be create, not ${entityPayload.action}`
+          `Action must be create, not ${transactionAction.action}`
         )
       }
     });
   }
 
-  _createEntity(entityPayload, entityState) {
-    return entityState.getEntity(entityPayload.name)
+  _createEntity(affectedEntity, publicKey, owner, entityState) {
+    return entityState.getEntity(affectedEntity)
     .then((entity) => {
       if (entity !== undefined && entity !== null) {
         throw new InvalidTransaction('Invalid Action: Entity already exists.')
       }
 
-      let createdEntity = new StateEntity(entityPayload.publicKey, entityPayload.name, entityPayload.owner, [], [], []);
+      let createdEntity = new StateEntity(publicKey, affectedEntity, owner, [], [], []);
 
-      return entityState.setEntity(entityPayload.name, createdEntity)
+      return entityState.setEntity(affectedEntity, createdEntity)
     });
   }
 
-  _addTrustRelationship(trustEntityPayload, entityState) {
-    return entityState.addTrustedBy(trustEntityPayload.receiver, trustEntityPayload.trustedBy);
+  _addTrustRelationship(affectedEntity, trustByAddition, entityState) {
+    return entityState.addTrustedBy(affectedEntity, trustByAddition);
   }
 
   _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {
@@ -78,13 +72,6 @@ class EntityHandler extends TransactionHandler {
 
   _verifySignature(signature, message, publicKey) {
     return this.context.verify(signature, message, Secp256k1PublicKey.fromHex(publicKey));
-  }
-
-  _verifyActionConsistency(action, otherAction) {
-    if(action == otherAction) {
-      return;
-    }
-    throw new InvalidTransaction('Actions from the two payloads does not match!');
   }
 }
 

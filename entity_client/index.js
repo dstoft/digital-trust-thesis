@@ -3,32 +3,21 @@
 var {EntityClient} = require('./client')
 var client = new EntityClient();
 
-// var {createTrustAnchor, createJill, createJohn, createEnergistyrelsenToJillTrust, createJohnToJillTrust} = require('./submitter');
 const {createNewKeyPair} = require("./keys/creator");
 
 const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const context = createContext('secp256k1');
 
-const CreateActionParameters = require('entity_shared/types').CreateActionParameters;
+const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill} = require('./submitter');
 
-var params = new CreateActionParameters("veryPublic");
-console.log(params.toBuffer().toString());
+client.create(createTrustAnchor());
+// client.create(createJohn());
+// client.create(createJill());
 
-// var trustAnchor = createTrustAnchor();
-// var jill = createJill();
-// var john = createJohn();
-// var trustAnchorTrustJill = createEnergistyrelsenToJillTrust();
-// var johnTrustJill = createJohnToJillTrust();
-
-// var entityTransaction = trustAnchor;
-// var entityTransaction = jill;
-// var entityTransaction = john;
-// client.create(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name);
-
-// var entityTransaction = trustAnchorTrustJill;
-// var entityTransaction = johnTrustJill;
-// client.addTrust(entityTransaction.inputPayload, entityTransaction.signature, entityTransaction.ownerName, entityTransaction.name)
+// client.addTrust(addTrustEnergistyrelsenToJohn());
+// client.addTrust(addTrustJohnToJill());
+// client.addTrust(addTrustEnergistyrelsenToJill());
 
 
 

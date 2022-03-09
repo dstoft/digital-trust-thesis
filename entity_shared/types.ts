@@ -1,10 +1,24 @@
 export class TransactionPayload {
-    payload: TransactionAction;
+    payload: string;
     signature: string;
 
-    constructor(payload: TransactionAction, signature: string) {
+    constructor(payload: string, signature: string) {
         this.payload = payload;
         this.signature = signature;
+    }
+
+    toBuffer(): Buffer {
+        let array = [
+            this.payload,
+            this.signature
+        ];
+
+        return Buffer.from(array.join(','));
+    }
+
+    static fromBytes (payload: any) {
+        var splitData = payload.toString().split(',')
+        return new TransactionPayload(splitData[0], splitData[1]);
     }
 }
 
@@ -22,7 +36,7 @@ export class TransactionAction {
     }
 
     toBuffer(): Buffer {
-        let encodedParameters = Buffer.from(this.parameters.toString(), 'utf8').toString('base64');
+        let encodedParameters = Buffer.from(this.parameters.toBuffer().toString(), 'utf8').toString('base64');
 
         let array = [
             this.signer, 
@@ -33,10 +47,30 @@ export class TransactionAction {
 
         return Buffer.from(array.join(','));
     }
+
+    toBase64(): string {
+        return this.toBuffer().toString("base64");
+    }
+
+    static fromBase64(string: string): TransactionAction {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new TransactionAction(splitData[0], splitData[1], splitData[2], ActionParameters.fromBase64(splitData[3], splitData[1]));
+    }
 }
 
-class ActionParameters {
+abstract class ActionParameters {
 
+    static fromBase64(string: string, action: string) {
+        if(action === "create") {
+            return CreateActionParameters.fromBase64(string);
+        } else if(action === "add-trust") {
+            return AddTrustActionParameters.fromBase64(string);
+        } else {
+            throw new RangeError("ActionParameters does not recognize the provided action!");
+        }
+    }
+
+    abstract toBuffer(): Buffer;
 }
 
 export class CreateActionParameters extends ActionParameters {
@@ -54,21 +88,27 @@ export class CreateActionParameters extends ActionParameters {
 
         return Buffer.from(array.join(','));
     }
+
+    static fromBase64(string: string) {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new CreateActionParameters(splitData[0]);
+    }
 }
 
 export class AddTrustActionParameters extends ActionParameters {
-    trustedBy: string;
-
-    constructor(trustedBy: string) {
+    constructor() {
         super();
-        this.trustedBy = trustedBy;
     }
 
     toBuffer(): Buffer {
         let array = [
-            this.trustedBy
         ];
 
         return Buffer.from(array.join(','));
+    }
+
+    static fromBase64(string: string) {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new AddTrustActionParameters();
     }
 }

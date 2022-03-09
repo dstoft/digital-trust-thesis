@@ -8,6 +8,8 @@ const fetch = require('node-fetch');
 const {Secp256k1PrivateKey} = require('sawtooth-sdk/signing/secp256k1')	
 const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding')
 
+const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
+
 function hash(v) {
     return createHash('sha512').update(v).digest('hex').toLowerCase();
 }
@@ -25,16 +27,18 @@ class EntityClient {
         this.publicKey = this.signer.getPublicKey().asHex();
       }
 
-    create(inputPayload, signature, ownerName, name) {
-        let inputAddresses = [this.getAddress(ownerName), this.getAddress(name)];
-        let outputAddresses = [this.getAddress(name)];
-        this._wrap_and_send(inputPayload, signature, ownerName, 'create', inputAddresses, outputAddresses);
+    create(transactionPayload) {
+        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+        this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
-    addTrust(inputPayload, signature, ownerName, name) {
-        let inputAddresses = [this.getAddress(ownerName), this.getAddress(name)];
-        let outputAddresses = [this.getAddress(name)];
-        this._wrap_and_send(inputPayload, signature, ownerName, 'add-trust', inputAddresses, outputAddresses);
+    addTrust(transactionPayload) {
+        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+        this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
     getAddress(name) {
