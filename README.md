@@ -9,3 +9,5 @@ rm -r node_modules
 npm install --no-bin-links
 npm run compile_protobuf
 ```
+
+This requires Visual Studio 2017 or newer, and can be installed from https://github.com/nodejs/node-gyp#on-windows. (Also Python as mentioned). 

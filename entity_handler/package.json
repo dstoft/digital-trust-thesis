@@ -11,11 +11,12 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cbor": "^3.0.0",
+    "entity_shared": "file:../entity_shared",
     "sawtooth-sdk": "file:../sawtooth-sdk-javascript-main",
-    "text-encoding": "^0.6.4",
-    "entity_shared": "file:../entity_shared"
+    "text-encoding": "^0.6.4"
   },
   "devDependencies": {
+    "@types/node": "^17.0.21",
     "typescript": "^4.6.2"
   }
 }
