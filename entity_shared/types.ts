@@ -65,6 +65,8 @@ abstract class ActionParameters {
             return CreateActionParameters.fromBase64(string);
         } else if(action === "add-trust") {
             return AddTrustActionParameters.fromBase64(string);
+        } else if(action === "create-children-property") {
+            return CreateChildrenPropertyActionParameters.fromBase64(string);
         } else {
             throw new RangeError("ActionParameters does not recognize the provided action!");
         }
@@ -110,5 +112,27 @@ export class AddTrustActionParameters extends ActionParameters {
     static fromBase64(string: string) {
         var splitData = Buffer.from(string, 'base64').toString().split(',');
         return new AddTrustActionParameters();
+    }
+}
+
+export class CreateChildrenPropertyActionParameters extends ActionParameters {
+    propertyName: string;
+
+    constructor(propertyName: string) {
+        super();
+        this.propertyName = propertyName;
+    }
+
+    toBuffer(): Buffer {
+        let array = [
+            this.propertyName
+        ];
+
+        return Buffer.from(array.join(','));
+    }
+
+    static fromBase64(string: string) {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new CreateChildrenPropertyActionParameters(splitData[0]);
     }
 }

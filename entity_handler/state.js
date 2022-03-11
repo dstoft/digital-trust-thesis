@@ -53,6 +53,19 @@ class EntityState {
     });
   }
 
+  createChildrenProperty(affectedEntity, propertyName) {
+    return this._loadEntity(affectedEntity).then(entity => {
+      let currentChildrenProperties = entity.childrenProperties;
+      if(currentChildrenProperties.includes(propertyName)) {
+        return;
+      }
+      entity.childrenProperties.push(propertyName);
+      return this.setEntity(affectedEntity, entity);
+    });
+  }
+
+  
+
   _loadEntity (name) {
     let address = _makeEntityAddress(name)
     return this.context.getState([address], this.timeout)

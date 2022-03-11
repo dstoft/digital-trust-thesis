@@ -33,6 +33,11 @@ class EntityHandler extends TransactionHandler {
         return this._createEntity(transactionAction.affectedEntity, transactionAction.parameters.publicKey, transactionAction.signer, entityState);
       } else if (transactionAction.action === 'add-trust') {
         return this._addTrustRelationship(transactionAction.affectedEntity, transactionAction.signer, entityState);
+      } else if (transactionAction.action === 'create-children-property') {
+        if(transactionAction.affectedEntity !== transactionAction.signer) {
+          throw new InvalidTransaction("When creating children properties, the signer and affected entity must be the same!");
+        }
+        return this._createChildrenProperty(transactionAction.affectedEntity, transactionAction.parameters.propertyName, entityState);
       } else {
         throw new InvalidTransaction(
           `Action must be create, not ${transactionAction.action}`
@@ -56,6 +61,10 @@ class EntityHandler extends TransactionHandler {
 
   _addTrustRelationship(affectedEntity, trustByAddition, entityState) {
     return entityState.addTrustedBy(affectedEntity, trustByAddition);
+  }
+
+  _createChildrenProperty(affectedEntity, propertyName, entityState) {
+    return entityState.createChildrenProperty(affectedEntity, propertyName);
   }
 
   _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {

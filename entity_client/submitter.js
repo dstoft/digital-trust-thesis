@@ -1,4 +1,4 @@
-const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
+const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters, CreateChildrenPropertyActionParameters} = require('entity_shared/types');
 const fs = require('fs')
 
 const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
@@ -16,7 +16,8 @@ module.exports = {
     createJill,
     addTrustEnergistyrelsenToJohn,
     addTrustJohnToJill,
-    addTrustEnergistyrelsenToJill
+    addTrustEnergistyrelsenToJill,
+    createChildrenPropertyForEntity
 }
 
 
@@ -65,6 +66,10 @@ function addTrustEnergistyrelsenToJill() {
     return createAddTrustAction(affectedEntity, signer);
 }
 
+function createChildrenPropertyForEntity(affectedEntity, propertyName) {
+    return createCreateChildrenParameterAction(affectedEntity, affectedEntity, propertyName);
+}
+
 function createCreateAction(affectedEntity, ownerName, publicKeyFilename) {
     var createActionParameters = new CreateActionParameters(readFromFile(publicKeyFilename.toLowerCase() + ".pub"));
     var action = new TransactionAction(ownerName, "create", affectedEntity, createActionParameters);
@@ -81,6 +86,19 @@ function createCreateAction(affectedEntity, ownerName, publicKeyFilename) {
 function createAddTrustAction(affectedEntity, ownerName) {
     var addTrustActionParameters = new AddTrustActionParameters();
     var action = new TransactionAction(ownerName, "add-trust", affectedEntity, addTrustActionParameters);
+
+    let privateKeyStr = readFromFile(ownerName.toLowerCase() + ".priv").toString().trim();
+    const privateKey = Secp256k1PrivateKey.fromHex(privateKeyStr);
+
+    var encodedAction = action.toBuffer().toString("base64");
+    var signature = context.sign(encodedAction, privateKey);
+    var transactionPayload = new TransactionPayload(encodedAction, signature);
+    return transactionPayload;
+}
+
+function createCreateChildrenParameterAction(affectedEntity, ownerName, propertyName) {
+    var createChildrenPropertyActionParameters = new CreateChildrenPropertyActionParameters(propertyName);
+    var action = new TransactionAction(ownerName, "create-children-property", affectedEntity, createChildrenPropertyActionParameters);
 
     let privateKeyStr = readFromFile(ownerName.toLowerCase() + ".priv").toString().trim();
     const privateKey = Secp256k1PrivateKey.fromHex(privateKeyStr);

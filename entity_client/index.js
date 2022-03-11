@@ -9,7 +9,7 @@ const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const context = createContext('secp256k1');
 
-const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill} = require('./submitter');
+const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity} = require('./submitter');
 
 client.create(createTrustAnchor());
 // client.create(createJohn());
@@ -19,6 +19,7 @@ client.create(createTrustAnchor());
 // client.addTrust(addTrustJohnToJill());
 // client.addTrust(addTrustEnergistyrelsenToJill());
 
+// client.createChildrenProperty(createChildrenPropertyForEntity("john","wow117"));
 
 
 // How to verify signature here on the client side
