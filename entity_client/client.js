@@ -48,6 +48,13 @@ class EntityClient {
         this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
+    useChildrenProperty(transactionPayload) {
+        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+        this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
+    }
+
     getAddress(name) {
         return hash("entity").substr(0, 6) + hash(name).substr(0, 64);
     }

@@ -64,6 +64,19 @@ class EntityState {
     });
   }
 
+  useChildrenProperty(affectedEntity, stateEntityProperty) {
+    return this._loadEntity(affectedEntity).then(entity => {
+      let foundIndex = entity.properties.findIndex(element => element.property == stateEntityProperty.property);
+      if(foundIndex !== -1) { 
+        entity.properties.splice(foundIndex, 1, stateEntityProperty);
+      } else {
+        entity.properties.push(stateEntityProperty);
+      }
+
+      return this.setEntity(affectedEntity, entity);
+    });
+  }
+
   
 
   _loadEntity (name) {

@@ -8,6 +8,7 @@ const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const StateEntity = require('./dist/types').StateEntity;
+const StateEntityProperty = require('./dist/types').StateEntityProperty;
 const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
@@ -38,6 +39,8 @@ class EntityHandler extends TransactionHandler {
           throw new InvalidTransaction("When creating children properties, the signer and affected entity must be the same!");
         }
         return this._createChildrenProperty(transactionAction.affectedEntity, transactionAction.parameters.propertyName, entityState);
+      } else if (transactionAction.action === 'use-children-property') {
+        return this._useChildrenProperty(transactionAction.affectedEntity, transactionAction.signer, transactionAction.parameters.propertyName, transactionAction.parameters.propertyValue, entityState);
       } else {
         throw new InvalidTransaction(
           `Action must be create, not ${transactionAction.action}`
@@ -65,6 +68,17 @@ class EntityHandler extends TransactionHandler {
 
   _createChildrenProperty(affectedEntity, propertyName, entityState) {
     return entityState.createChildrenProperty(affectedEntity, propertyName);
+  }
+
+  _useChildrenProperty(affectedEntity, owner, propertyName, propertyValue, entityState) {
+    return entityState.getEntity(owner)
+    .then(entity => {
+      let found = entity.childrenProperties.find(element => element == propertyName);
+      if(found === undefined) { throw new InvalidTransaction('Owner does not have that children property!'); }
+
+      var newStateEntityProperty = new StateEntityProperty(propertyName, propertyValue);
+      return entityState.useChildrenProperty(affectedEntity, newStateEntityProperty);
+    })
   }
 
   _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {

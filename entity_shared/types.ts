@@ -67,6 +67,8 @@ abstract class ActionParameters {
             return AddTrustActionParameters.fromBase64(string);
         } else if(action === "create-children-property") {
             return CreateChildrenPropertyActionParameters.fromBase64(string);
+        } else if(action === "use-children-property") {
+            return UseChildrenPropertyActionParameters.fromBase64(string);
         } else {
             throw new RangeError("ActionParameters does not recognize the provided action!");
         }
@@ -134,5 +136,30 @@ export class CreateChildrenPropertyActionParameters extends ActionParameters {
     static fromBase64(string: string) {
         var splitData = Buffer.from(string, 'base64').toString().split(',');
         return new CreateChildrenPropertyActionParameters(splitData[0]);
+    }
+}
+
+export class UseChildrenPropertyActionParameters extends ActionParameters {
+    propertyName: string;
+    propertyValue: string;
+
+    constructor(propertyName: string, propertyValue: string) {
+        super();
+        this.propertyName = propertyName;
+        this.propertyValue = propertyValue;
+    }
+
+    toBuffer(): Buffer {
+        let array = [
+            this.propertyName,
+            this.propertyValue
+        ];
+
+        return Buffer.from(array.join(','));
+    }
+
+    static fromBase64(string: string) {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new UseChildrenPropertyActionParameters(splitData[0], splitData[1]);
     }
 }

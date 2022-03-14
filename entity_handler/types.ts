@@ -43,7 +43,7 @@ export class StateEntity {
 
     toString(): Buffer {
         let encodedTrustedBy = Buffer.from(this.trustedBy.join(','), 'utf8').toString('base64');
-        let encodedProperties = Buffer.from(this.properties.join(','), 'utf8').toString('base64');
+        let encodedProperties = StateEntityProperty.toBase64(this.properties);
         let encodedChildrenProperties = Buffer.from(this.childrenProperties.join(','), 'utf8').toString('base64');
 
         let array = [
@@ -66,6 +66,15 @@ export class StateEntityProperty {
     constructor (property: string, value: string) {
         this.property = property;
         this.value = value;
+    }
+
+    toString(): string {
+        return this.property + ":" + this.value;
+    }
+
+    static toBase64(properties: StateEntityProperty[]): string {
+        var joinedStr = properties.map(p => p.toString()).join(",");
+        return Buffer.from(joinedStr, 'utf8').toString("base64");
     }
 
     static fromBase64(string: string): StateEntityProperty[] {

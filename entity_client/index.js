@@ -9,7 +9,7 @@ const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const context = createContext('secp256k1');
 
-const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity} = require('./submitter');
+const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity, useChildrenPropertyForEntity} = require('./submitter');
 
 client.create(createTrustAnchor());
 // client.create(createJohn());
@@ -19,7 +19,12 @@ client.create(createTrustAnchor());
 // client.addTrust(addTrustJohnToJill());
 // client.addTrust(addTrustEnergistyrelsenToJill());
 
-// client.createChildrenProperty(createChildrenPropertyForEntity("john","wow117"));
+// client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","installer"));
+// client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","types"));
+
+// client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "yes"));
+// client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "no"));
+// client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "types", "potato;salad;carrots;pineapples"));
 
 
 // How to verify signature here on the client side
