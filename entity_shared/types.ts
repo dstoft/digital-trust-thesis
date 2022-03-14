@@ -105,7 +105,7 @@ export class AddTrustActionParameters extends ActionParameters {
     }
 
     toBuffer(): Buffer {
-        let array = [
+        let array:string[] = [
         ];
 
         return Buffer.from(array.join(','));

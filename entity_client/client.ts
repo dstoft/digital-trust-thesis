@@ -1,24 +1,27 @@
 // From https://github.com/alejandrolr/sawtooth-app-js/blob/master/jsclient/routes/SimpleWalletClient.js
 
-const {createHash} = require('crypto')
-const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
-const protobuf = require('sawtooth-sdk/protobuf')
-const fs = require('fs')
-const fetch = require('node-fetch');
-const {Secp256k1PrivateKey} = require('sawtooth-sdk/signing/secp256k1')	
+import { createHash } from 'crypto';
+import { CryptoFactory, createContext, Signer } from 'sawtooth-sdk/signing';
+import protobuf from 'sawtooth-sdk/protobuf';
+import fs from 'fs';
+import fetch from 'node-fetch';
+import { Secp256k1PrivateKey } from 'sawtooth-sdk/signing/secp256k1';
+// tslint:disable-next-line:no-var-requires
 const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding')
 
-const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
+import { TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters } from 'entity_shared/types';
 
-function hash(v) {
+function hash(v:string):string {
     return createHash('sha512').update(v).digest('hex').toLowerCase();
 }
 
-function toBase64(str) {
+function toBase64(str:string):string {
     return Buffer.from(str, 'utf8').toString('base64');
 }
 
-class EntityClient {
+export class EntityClient {
+    signer: Signer;
+    publicKey: string;
     constructor() {
         const privateKeyStr = this.getPriKey().toString().trim();
         const context = createContext('secp256k1');
@@ -27,59 +30,59 @@ class EntityClient {
         this.publicKey = this.signer.getPublicKey().asHex();
       }
 
-    create(transactionPayload) {
-        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
-        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
-        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+    create(transactionPayload:TransactionPayload) {
+        const transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        const inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        const outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
         this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
-    addTrust(transactionPayload) {
-        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
-        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
-        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+    addTrust(transactionPayload:TransactionPayload) {
+        const transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        const inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        const outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
         this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
-    createChildrenProperty(transactionPayload) {
-        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
-        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
-        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+    createChildrenProperty(transactionPayload:TransactionPayload) {
+        const transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        const inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        const outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
         this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
-    useChildrenProperty(transactionPayload) {
-        var transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
-        let inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
-        let outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
+    useChildrenProperty(transactionPayload:TransactionPayload) {
+        const transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
+        const inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
+        const outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
         this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
-    getAddress(name) {
+    getAddress(name:string) {
         return hash("entity").substr(0, 6) + hash(name).substr(0, 64);
     }
 
     getPriKey() {
-        var privkeyfile = './keys/client.priv';
+        const privkeyfile = './keys/client.priv';
         return fs.readFileSync(privkeyfile);
     }
 
     getPubKey() {
-        var pubkeyfile = './keys/client.pub';
+        const pubkeyfile = './keys/client.pub';
         return fs.readFileSync(pubkeyfile);
     }
 
-    _wrap_and_send(inputPayload, signature, ownerName, action, inputAddresses, outputAddresses) {
-        var payload = '';
+    _wrap_and_send(inputPayload:string, signature:string, ownerName:string, action:string, inputAddresses:string[], outputAddresses:string[]) {
+        let payload = '';
         payload = [inputPayload, signature, ownerName, action].join(",");
         console.log(payload);
         this._send_wrapped(payload, inputAddresses, outputAddresses);
     }
 
-    _send_wrapped(payload, inputAddresses, outputAddresses){
-        var enc = new TextEncoder('utf8');
+    _send_wrapped(payload:string, inputAddresses:string[], outputAddresses:string[]){
+        const enc = new TextEncoder('utf8');
         const payloadBytes = enc.encode(payload);
-        const transactionHeaderBytes = protobuf.TransactionHeader.encode({
+        const transactionHeaderBytes:any = protobuf.TransactionHeader.encode({
             familyName: 'entity',
             familyVersion: '1.0',
             inputs: inputAddresses,
@@ -96,7 +99,7 @@ class EntityClient {
             payload: payloadBytes
         });
         const transactions = [transaction];
-        const batchHeaderBytes = protobuf.BatchHeader.encode({
+        const batchHeaderBytes:any = protobuf.BatchHeader.encode({
             signerPublicKey: this.signer.getPublicKey().asHex(),
             transactionIds: transactions.map((txn) => txn.headerSignature),
         }).finish();
@@ -104,32 +107,19 @@ class EntityClient {
         const batch = protobuf.Batch.create({
             header: batchHeaderBytes,
             headerSignature: batchSignature,
-            transactions: transactions,
+            transactions,
         });
         const batchListBytes = protobuf.BatchList.encode({
             batches: [batch]
         }).finish();
-        this._send_to_rest_api(batchListBytes);	
+        this._send_to_rest_api(batchListBytes);
     }
-  
-    _send_to_rest_api(batchListBytes){
+
+    _send_to_rest_api(batchListBytes:any){
         if (batchListBytes == null) {
-            var geturl = 'http://localhost:8008/state/'+this.address
-            console.log("Getting from: " + geturl);
-            return fetch(geturl, {
-                method: 'GET',
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                var data = responseJson.data;
-                var amount = new Buffer(data, 'base64').toString();
-                return amount;
-            })
-            .catch((error) => {
-                console.error(error);
-            }); 	
+            throw new Error('GET method not implemented.');
         }
-        else{
+        else {
             fetch('http://localhost:8008/batches', {
                 method: 'POST',
                 headers: {
@@ -143,10 +133,7 @@ class EntityClient {
             })
             .catch((error) => {
                 console.error(error);
-            }); 	
+            });
         }
     }
 }
-module.exports = {
-    EntityClient
-};

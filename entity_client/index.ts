@@ -1,17 +1,17 @@
 'use strict'
 
-var {EntityClient} = require('./client')
-var client = new EntityClient();
+import { EntityClient } from './client';
+const client = new EntityClient();
 
-const {createNewKeyPair} = require("./keys/creator");
+import { createNewKeyPair } from "./keys/creator";
 
-const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
-const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
+import { CryptoFactory, createContext } from 'sawtooth-sdk/signing';
+import { Secp256k1PrivateKey, Secp256k1PublicKey } from 'sawtooth-sdk/signing/secp256k1';
 const context = createContext('secp256k1');
 
-const {createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity, useChildrenPropertyForEntity} = require('./submitter');
+import { createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity, useChildrenPropertyForEntity } from './submitter';
 
-client.create(createTrustAnchor());
+// client.create(createTrustAnchor());
 // client.create(createJohn());
 // client.create(createJill());
 
@@ -22,7 +22,7 @@ client.create(createTrustAnchor());
 // client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","installer"));
 // client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","types"));
 
-// client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "yes"));
+client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "yes"));
 // client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "no"));
 // client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "types", "potato;salad;carrots;pineapples"));
 
