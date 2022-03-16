@@ -9,7 +9,9 @@ import { Secp256k1PrivateKey } from 'sawtooth-sdk/signing/secp256k1';
 // tslint:disable-next-line:no-var-requires
 const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding')
 
-import { TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters } from 'entity_shared/types';
+import {TransactionPayload} from 'entity_shared';
+// declare type TransactionPayload = typeof entity_shared.TransactionPayload;
+// declare type TransactionAction = typeof entity_shared.TransactionAction;
 
 function hash(v:string):string {
     return createHash('sha512').update(v).digest('hex').toLowerCase();

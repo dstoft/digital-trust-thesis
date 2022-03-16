@@ -1,4 +1,4 @@
-const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters, CreateChildrenPropertyActionParameters, UseChildrenPropertyActionParameters} = require('entity_shared/types');
+const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters, CreateChildrenPropertyActionParameters, UseChildrenPropertyActionParameters} = require('entity_shared');
 const fs = require('fs')
 
 const {CryptoFactory, createContext } = require('sawtooth-sdk/signing')
@@ -20,7 +20,6 @@ module.exports = {
     createChildrenPropertyForEntity,
     useChildrenPropertyForEntity
 }
-
 
 function createTrustAnchor() {
     let fileName = "energistyrelsen";

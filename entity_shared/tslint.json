@@ -1,0 +1,12 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "trailing-comma": [ false ],
+        "variable-name": { "options": ["allow-leading-underscore", "check-format", "allow-pascal-case"] }
+    },
+    "rulesDirectory": []
+}
