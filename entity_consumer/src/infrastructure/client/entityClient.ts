@@ -2,7 +2,7 @@ import { TransactionPayload } from "entity_shared/types";
 import fetch from 'node-fetch';
 
 export class EntityClient {
-    async applyTransactionPayload(transactionPayload: TransactionPayload) {
+    async applyTransactionPayload(transactionPayload: TransactionPayload): Promise<any> {
         const response = await fetch('http://localhost:8081', {
             method: 'post',
             body: JSON.stringify(transactionPayload),

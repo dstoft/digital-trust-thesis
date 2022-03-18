@@ -12,17 +12,34 @@ export function setup() {
     const router = express.Router();
     app.use("/", router);
 
-    // define a route handler for the default home page
-    router.get( "/", ( req, res ) => {
-        res.send( "Hello world!" );
-    } );
-
     router.post( "/entity", async ( req, res ) => {
-        // tslint:disable-next-line:no-console
-        console.log(req.body);
 
         const entityService = new EntityService();
         const response = await entityService.createEntity(req.body);
+
+        res.send( response );
+    } );
+
+    router.post( "/entity/trust", async ( req, res ) => {
+
+        const entityService = new EntityService();
+        const response = await entityService.addTrust(req.body);
+
+        res.send( response );
+    } );
+
+    router.post( "/entity/property", async ( req, res ) => {
+
+        const entityService = new EntityService();
+        const response = await entityService.createChildrenProperty(req.body);
+
+        res.send( response );
+    } );
+
+    router.post( "/entity/property/use", async ( req, res ) => {
+
+        const entityService = new EntityService();
+        const response = await entityService.useChildrenProperty(req.body);
 
         res.send( response );
     } );

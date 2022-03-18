@@ -14,18 +14,9 @@ export function setup() {
     const router = express.Router();
     app.use("/", router);
 
-    // define a route handler for the default home page
-    router.get( "/", ( req, res ) => {
-        res.send( "Hello world!" );
-    } );
-
     router.post( "/", async ( req, res ) => {
-        // tslint:disable-next-line:no-console
-        console.log(req.body);
         const transactionPayload = new TransactionPayload(req.body.payload, req.body.signature);
         const response = await client.create(transactionPayload);
-        // tslint:disable-next-line:no-console
-        console.log(response);
         res.send( response );
     } );
 
