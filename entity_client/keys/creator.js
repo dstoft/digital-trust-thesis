@@ -1,5 +1,4 @@
 
-
 const fs = require('fs')
 const { createContext } = require('sawtooth-sdk/signing')
 
@@ -10,7 +9,6 @@ function createNewKeyPair(name) {
     writeFile("./keys/" + name + ".priv", newPrivateKey.asHex());
     writeFile("./keys/" + name + ".pub", newPublicKey.asHex());
 }
-
 
 function writeFile(filename, content) {
     fs.writeFile(filename, content, err => {

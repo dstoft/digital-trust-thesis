@@ -21,7 +21,6 @@ module.exports = {
     useChildrenPropertyForEntity
 }
 
-
 function createTrustAnchor() {
     let fileName = "energistyrelsen";
     let ownerName = "trust-anchor";

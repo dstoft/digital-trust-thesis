@@ -34,7 +34,7 @@ export class EntityClient {
         const transactionAction = TransactionAction.fromBase64(transactionPayload.payload);
         const inputAddresses = [this.getAddress(transactionAction.signer), this.getAddress(transactionAction.affectedEntity)];
         const outputAddresses = [this.getAddress(transactionAction.affectedEntity)];
-        this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
+        return this._send_wrapped(transactionPayload.toBuffer().toString(), inputAddresses, outputAddresses);
     }
 
     addTrust(transactionPayload:TransactionPayload) {
@@ -112,28 +112,22 @@ export class EntityClient {
         const batchListBytes = protobuf.BatchList.encode({
             batches: [batch]
         }).finish();
-        this._send_to_rest_api(batchListBytes);
+        return this._send_to_rest_api(batchListBytes);
     }
 
-    _send_to_rest_api(batchListBytes:any){
+    async _send_to_rest_api(batchListBytes:any){
         if (batchListBytes == null) {
             throw new Error('GET method not implemented.');
         }
         else {
-            fetch('http://localhost:8008/batches', {
+            const response = await fetch('http://localhost:8008/batches', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/octet-stream'
             },
                 body: batchListBytes
-            })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                console.log(responseJson);
-            })
-            .catch((error) => {
-                console.error(error);
             });
+            return await response.json();
         }
     }
 }

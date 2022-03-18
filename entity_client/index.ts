@@ -11,6 +11,12 @@ const context = createContext('secp256k1');
 
 import { createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJohn, addTrustJohnToJill, addTrustEnergistyrelsenToJill, createChildrenPropertyForEntity, useChildrenPropertyForEntity } from './submitter';
 
+// tslint:disable-next-line:no-console
+// console.log(createTrustAnchor());
+
+import { setup } from './controller';
+setup();
+
 // client.create(createTrustAnchor());
 // client.create(createJohn());
 // client.create(createJill());
@@ -22,7 +28,7 @@ import { createTrustAnchor, createJohn, createJill, addTrustEnergistyrelsenToJoh
 // client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","installer"));
 // client.createChildrenProperty(createChildrenPropertyForEntity("Energistyrelsen","types"));
 
-client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "yes"));
+// client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "yes"));
 // client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "installer", "no"));
 // client.useChildrenProperty(useChildrenPropertyForEntity("john", "Energistyrelsen", "types", "potato;salad;carrots;pineapples"));
 
