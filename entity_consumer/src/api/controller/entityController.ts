@@ -44,6 +44,14 @@ export function setup() {
         res.send( response );
     } );
 
+    router.post( "/entity/lock", async ( req, res ) => {
+
+        const entityService = new EntityService();
+        const response = await entityService.lockEntity(req.body);
+
+        res.send( response );
+    } );
+
     // start the Express server
     app.listen( port, () => {
         // tslint:disable-next-line:no-console

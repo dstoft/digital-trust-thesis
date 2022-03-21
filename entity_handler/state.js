@@ -77,6 +77,13 @@ class EntityState {
     });
   }
 
+  lockEntity(affectedEntity) {
+    return this._loadEntity(affectedEntity).then(entity => {
+      entity.owner = "locked";
+
+      return this.setEntity(affectedEntity, entity);
+    });
+  }
   
 
   _loadEntity (name) {

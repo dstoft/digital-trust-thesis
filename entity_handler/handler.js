@@ -41,6 +41,8 @@ class EntityHandler extends TransactionHandler {
         return this._createChildrenProperty(transactionAction.affectedEntity, transactionAction.parameters.propertyName, entityState);
       } else if (transactionAction.action === 'use-children-property') {
         return this._useChildrenProperty(transactionAction.affectedEntity, transactionAction.signer, transactionAction.parameters.propertyName, transactionAction.parameters.propertyValue, entityState);
+      } else if (transactionAction.action === 'lock-entity') {
+        return this._lockEntity(transactionAction.affectedEntity, entityState);
       } else {
         throw new InvalidTransaction(
           `Action must be create, not ${transactionAction.action}`
@@ -79,6 +81,10 @@ class EntityHandler extends TransactionHandler {
       var newStateEntityProperty = new StateEntityProperty(propertyName, propertyValue);
       return entityState.useChildrenProperty(affectedEntity, newStateEntityProperty);
     })
+  }
+
+  _lockEntity(affectedEntity, entityState) {
+    return entityState.lockEntity(affectedEntity);
   }
 
   _verifyTransactionSignature(ownerEntity, inputPayload, signature, ownerName) {

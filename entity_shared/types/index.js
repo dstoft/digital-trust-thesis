@@ -1,4 +1,4 @@
-const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters, CreateChildrenPropertyActionParameters, UseChildrenPropertyActionParameters} = require('../dist/types');
+const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters, CreateChildrenPropertyActionParameters, UseChildrenPropertyActionParameters, LockEntityActionParameters} = require('../dist/types');
 
 module.exports = {
     TransactionPayload, 
@@ -6,5 +6,6 @@ module.exports = {
     CreateActionParameters, 
     AddTrustActionParameters,
     CreateChildrenPropertyActionParameters,
-    UseChildrenPropertyActionParameters
+    UseChildrenPropertyActionParameters,
+    LockEntityActionParameters
 }

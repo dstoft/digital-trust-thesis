@@ -1,4 +1,4 @@
-import { AddTrustActionParameters, CreateActionParameters, CreateChildrenPropertyActionParameters, TransactionAction, TransactionPayload, UseChildrenPropertyActionParameters } from "entity_shared/types";
+import { AddTrustActionParameters, CreateActionParameters, CreateChildrenPropertyActionParameters, LockEntityActionParameters, TransactionAction, TransactionPayload, UseChildrenPropertyActionParameters } from "entity_shared/types";
 import { CreateEntityParameters } from "./parameters/createEntityParameters";
 import { createContext } from 'sawtooth-sdk/signing';
 import { Secp256k1PrivateKey } from 'sawtooth-sdk/signing/secp256k1';
@@ -6,6 +6,7 @@ import { EntityClient } from "../infrastructure/client/entityClient";
 import { AddTrustParameters } from "./parameters/addTrustParameters";
 import { CreateChildrenPropertyParameters } from "./parameters/CreateChildrenPropertyParameters";
 import { UseChildrenPropertyParameters } from "./parameters/useChildrenPropertyParameters";
+import { LockEntityParameters } from "./parameters/lockEntityParameters";
 
 export class EntityService {
 
@@ -39,6 +40,15 @@ export class EntityService {
     useChildrenProperty(parameters: UseChildrenPropertyParameters): Promise<any> {
         const actionParameters = new UseChildrenPropertyActionParameters(parameters.propertyName, parameters.propertyValue);
         const action = new TransactionAction(parameters.signer, "use-children-property", parameters.affectedEntity, actionParameters);
+        const transactionPayload = this.signTransaction(action, parameters.privateKey);
+
+        const client = new EntityClient();
+        return client.applyTransactionPayload(transactionPayload);
+    }
+
+    lockEntity(parameters: LockEntityParameters): Promise<any> {
+        const actionParameters = new LockEntityActionParameters();
+        const action = new TransactionAction(parameters.signer, "lock-entity", parameters.affectedEntity, actionParameters);
         const transactionPayload = this.signTransaction(action, parameters.privateKey);
 
         const client = new EntityClient();

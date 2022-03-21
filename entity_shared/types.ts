@@ -69,6 +69,8 @@ abstract class ActionParameters {
             return CreateChildrenPropertyActionParameters.fromBase64(string);
         } else if(action === "use-children-property") {
             return UseChildrenPropertyActionParameters.fromBase64(string);
+        } else if(action === "lock-entity") {
+            return LockEntityActionParameters.fromBase64(string);
         } else {
             throw new RangeError("ActionParameters does not recognize the provided action!");
         }
@@ -161,5 +163,23 @@ export class UseChildrenPropertyActionParameters extends ActionParameters {
     static fromBase64(string: string) {
         var splitData = Buffer.from(string, 'base64').toString().split(',');
         return new UseChildrenPropertyActionParameters(splitData[0], splitData[1]);
+    }
+}
+
+export class LockEntityActionParameters extends ActionParameters {
+    constructor() {
+        super();
+    }
+
+    toBuffer(): Buffer {
+        let array:string[] = [
+        ];
+
+        return Buffer.from(array.join(','));
+    }
+
+    static fromBase64(string: string) {
+        var splitData = Buffer.from(string, 'base64').toString().split(',');
+        return new LockEntityActionParameters();
     }
 }
