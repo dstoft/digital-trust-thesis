@@ -13,6 +13,8 @@ const {TransactionPayload, TransactionAction} = require('entity_shared/types');
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 
+const reservedEntityNames = ["trust-anchor", "locked"];
+
 class EntityHandler extends TransactionHandler {
   constructor () {
     super(ENTITY_FAMILY, ['1.0'], [ENTITY_NAMESPACE])
@@ -56,6 +58,9 @@ class EntityHandler extends TransactionHandler {
   }
 
   _createEntity(affectedEntity, publicKey, owner, entityState) {
+    if(reservedEntityNames.includes(affectedEntity)) {
+      throw new InvalidTransaction('Invalid Action: Entity name ' + affectedEntity + ' is reserved!');
+    }
     return entityState.getEntity(affectedEntity)
     .then((entity) => {
       if (entity !== undefined && entity !== null) {
