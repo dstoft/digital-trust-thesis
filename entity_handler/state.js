@@ -18,7 +18,6 @@
 'use strict'
 
 const crypto = require('crypto')
-const {TextEncoder, TextDecoder} = require('text-encoding/lib/encoding');
 const StateEntity = require('./dist/types').StateEntity;
 
 class EntityState {

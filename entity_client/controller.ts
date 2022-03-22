@@ -6,7 +6,6 @@ const port = 8081; // default port to listen
 
 import { EntityClient } from './client';
 import { TransactionPayload } from "entity_shared/types";
-const client = new EntityClient();
 
 export function setup() {
     app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,7 +15,8 @@ export function setup() {
 
     router.post( "/", async ( req, res ) => {
         const transactionPayload = new TransactionPayload(req.body.payload, req.body.signature);
-        const response = await client.create(transactionPayload);
+        const client = new EntityClient();
+        const response = await client.post(transactionPayload);
         res.send( response );
     } );
 

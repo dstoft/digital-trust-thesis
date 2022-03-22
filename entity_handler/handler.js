@@ -9,7 +9,7 @@ const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
 const StateEntity = require('./dist/types').StateEntity;
 const StateEntityProperty = require('./dist/types').StateEntityProperty;
-const {TransactionPayload, TransactionAction, CreateActionParameters, AddTrustActionParameters} = require('entity_shared/types');
+const {TransactionPayload, TransactionAction} = require('entity_shared/types');
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 
