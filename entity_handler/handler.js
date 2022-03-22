@@ -29,6 +29,10 @@ class EntityHandler extends TransactionHandler {
         throw new InvalidTransaction('Invalid signature!');
       }
     }).then(() => {
+      if(transactionAction.action === "use-children-property" || transactionAction.action === "lock-entity") {
+        return this._verifyParenthood(transactionAction.affectedEntity, transactionAction.signer, entityState);
+      }
+    }).then(() => {
 
       if (transactionAction.action === 'create') {
         return this._createEntity(transactionAction.affectedEntity, transactionAction.parameters.publicKey, transactionAction.signer, entityState);
@@ -101,6 +105,14 @@ class EntityHandler extends TransactionHandler {
 
   _verifySignature(signature, message, publicKey) {
     return this.context.verify(signature, message, Secp256k1PublicKey.fromHex(publicKey));
+  }
+
+  _verifyParenthood(affectedEntityName, ownerName, entityState) {
+    return entityState.getEntity(affectedEntityName).then((affectedEntity) => {
+      if(affectedEntity.owner !== ownerName) {
+        throw new InvalidTransaction('Invalid parenthood!');
+      }
+    })
   }
 }
 
