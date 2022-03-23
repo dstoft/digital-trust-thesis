@@ -7,9 +7,10 @@ const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 
 const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
-const StateEntity = require('./dist/types').StateEntity;
-const StateEntityProperty = require('./dist/types').StateEntityProperty;
+// const StateEntity = require('./dist/types').StateEntity;
+// const StateEntityProperty = require('./dist/types').StateEntityProperty;
 const {TransactionPayload, TransactionAction} = require('entity_shared/types');
+const {StateEntity, StateEntityProperty} = require('entity_shared/stateTypes');
 
 const trustAnchorPublicKey = '03393b90993f7421a5092b2a9936009dd2bb22a70cc4ff89bf577884477dda5dff';
 

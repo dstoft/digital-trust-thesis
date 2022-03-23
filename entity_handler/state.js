@@ -18,7 +18,7 @@
 'use strict'
 
 const crypto = require('crypto')
-const StateEntity = require('./dist/types').StateEntity;
+const {StateEntity} = require('entity_shared/stateTypes');
 
 class EntityState {
   constructor (context) {

@@ -18,5 +18,6 @@
 'use strict'
 
 module.exports = {
-  types: require('./types')
+  types: require('./types'),
+  stateTypes: require('./stateTypes')
 }

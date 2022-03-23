@@ -15,18 +15,22 @@ export class StateEntity {
         this.childrenProperties = childrenProperties;
     }
 
+    static fromBase64(string: string): StateEntity {
+        return StateEntity.fromString(Buffer.from(string, 'base64').toString());
+    }
+
     static fromString(string: string): StateEntity {
         let splitData = string.split(',');
         
-        let decodedTrustedBy = [];
+        let decodedTrustedBy:string[] = [];
         if(splitData[3] !== "") {
             decodedTrustedBy = Buffer.from(splitData[3], 'base64').toString().split(',');
         }
-        let decodedProperties = [];
+        let decodedProperties:StateEntityProperty[] = [];
         if(splitData[4] !== "") {
             decodedProperties = StateEntityProperty.fromBase64(splitData[4]);
         }
-        let decodedChildrenProperties = [];
+        let decodedChildrenProperties:string[] = [];
         if(splitData[5] !== "") {
             decodedChildrenProperties = Buffer.from(splitData[5], 'base64').toString().split(',');
         }
