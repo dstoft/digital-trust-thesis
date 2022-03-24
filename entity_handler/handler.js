@@ -7,8 +7,6 @@ const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions')
 
 const { createContext } = require('sawtooth-sdk/signing')
 const {Secp256k1PrivateKey, Secp256k1PublicKey} = require('sawtooth-sdk/signing/secp256k1')	
-// const StateEntity = require('./dist/types').StateEntity;
-// const StateEntityProperty = require('./dist/types').StateEntityProperty;
 const {TransactionPayload, TransactionAction} = require('entity_shared/types');
 const {StateEntity, StateEntityProperty} = require('entity_shared/stateTypes');
 
@@ -38,7 +36,9 @@ class EntityHandler extends TransactionHandler {
     }).then(() => {
 
       if (transactionAction.action === 'create') {
-        return this._createEntity(transactionAction.affectedEntity, transactionAction.parameters.publicKey, transactionAction.signer, entityState);
+        const result = this._createEntity(transactionAction.affectedEntity, transactionAction.parameters.publicKey, transactionAction.signer, entityState);
+        context.addEvent("entity/create",[["cookies-ate", "123"]]);
+        return result;
       } else if (transactionAction.action === 'add-trust') {
         return this._addTrustRelationship(transactionAction.affectedEntity, transactionAction.signer, entityState);
       } else if (transactionAction.action === 'create-children-property') {
