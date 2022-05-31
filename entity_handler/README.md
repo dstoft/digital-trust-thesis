@@ -1,10 +1,10 @@
-# XO Transaction processor
+# Entity Transaction processor
 
 A PoC for running a transaction processor, copied from the Sawtooth Github examples folder
 
 To run
 ```
-npm start tcp://localhost:4004
+npm start
 ```
 
 ## Prerequisites
@@ -12,9 +12,3 @@ Make sure that sawtooth-sdk-javascript-main has been compiled using the commands
 
 ## Inspiration
 https://github.com/hyperledger/sawtooth-sdk-javascript/tree/main/examples/xo
-
-## Compile TypeScript files
-Run
-```
-npx tsc
-```

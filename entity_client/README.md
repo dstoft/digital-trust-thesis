@@ -1,6 +1,6 @@
-# XO Client
+# Entity Client
 
-A PoC for creating a game in the XO transaction processor from Sawtooth (or the ../xo folder).
+A PoC for creating transactions and batches for the Entity transaction family
 
 To run
 ```
